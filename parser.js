@@ -6,6 +6,25 @@ var slice = function (arr) {
 
 const ELEMENT = 1
 
+const headings = {
+  'S'  : 180,
+  'SSW': 202.5,
+  'SW' : 225,
+  'WSW': 247.5,
+  'W'  : 270,
+  'WNW': 292.5,
+  'NW' : 315,
+  'NNW': 337.5,
+  'N'  : 0,
+  'NNE': 22.5,
+  'NE' : 45,
+  'ENE': 67.5,
+  'E'  : 90,
+  'ESE': 112.5,
+  'SE' : 135,
+  'SSE': 157.5 
+}
+
 const propMap = {
   id: 'id',
   c: 'color',
@@ -31,7 +50,7 @@ function parse(xml) {
       slice(child.childNodes).forEach(function (prop) {
         if (prop.nodeType !== ELEMENT) { return }
         if (prop.nodeName in propMap) {
-          bus[propMap[prop.nodeName]] = prop.textContent
+          bus[propMap[prop.nodeName]] = prop.textContent.trim()
         }
       })
       parsed.push(bus)
@@ -49,9 +68,10 @@ function toGeoJSON(buses) {
           {
             color: bus.color,
             route: bus.route,
-            routeDirection: bus.routeDirection,
+            routeDirection: bus.routeDirection.replace(/(\[|\])/g,''),
             direction: bus.direction,
             heading: bus.heading,
+            headingDegrees: headings[bus.heading],
             stop: bus.stop
           },
           bus.id
